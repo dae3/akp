@@ -29,16 +29,16 @@ func (a *App) GetPublicIp() (ip string, err error) {
 	return
 }
 
-func (a *App) CreateNSG(ip string) (err error) {
+func (a *App) CreateNSG(ip string) (nsg armnetwork.SecurityGroup, err error) {
 	c, err := armnetwork.NewSecurityGroupsClient(a.Subscription, a.AzID, nil)
 	if err != nil {
 		a.setMessage(fmt.Sprintf("Error creating NSG client: %s", err.Error()))
 		return
 	}
 
-	_, err = c.BeginCreateOrUpdate(a.ctx, "foo", "foo",
+	poller, err := c.BeginCreateOrUpdate(a.ctx, "foo", "foo",
 		armnetwork.SecurityGroup{
-			Location: a.Location,
+			Location: to.Ptr(a.Location),
 			Properties: &armnetwork.SecurityGroupPropertiesFormat{
 				SecurityRules: []*armnetwork.SecurityRule{
 					{
@@ -60,6 +60,12 @@ func (a *App) CreateNSG(ip string) (err error) {
 		a.setMessage(fmt.Sprintf("Error creating NSG: %s", err.Error()))
 		return
 	}
+
+	resp, err := poller.PollUntilDone(a.ctx, nil)
+	if err != nil {
+		return
+	}
+	nsg = resp.SecurityGroup
 
 	a.setMessage("Created NSG")
 	return

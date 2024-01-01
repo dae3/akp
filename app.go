@@ -18,15 +18,14 @@ type App struct {
 	ctx          context.Context
 	AzID         *azidentity.DefaultAzureCredential
 	Resources    []*Resource
-	Location     *string
+	Location     string
 	Subscription string
 }
 
 // NewApp creates a new App application struct
 func NewApp() (a *App) {
 	a = &App{}
-	l := "australiaeast"
-	a.Location = &l
+	a.Location = "australiaeast"
 	a.Resources = []*Resource{
 		&Resource{"Resource Group", "Unknown"},
 		&Resource{"NSG", "Unknown"},
@@ -73,7 +72,8 @@ func (a *App) Connect() {
 		a.setMessage(fmt.Sprintf("Error determining public IP: %s", err.Error()))
 		return
 	}
-	if err = a.CreateNSG(ip); err != nil {
+	nsg, err := a.CreateNSG(ip)
+	if err != nil {
 		a.setMessage(fmt.Sprintf("NSG creation failed: %s", err.Error()))
 		return
 	}
@@ -83,6 +83,17 @@ func (a *App) Connect() {
 		}
 	}
 	runtime.EventsEmit(a.ctx, "resource_change", a.Resources)
+
+	a.setMessage("Creating Proxy VM...")
+	if err = a.CreateProxyVM("foo", nsg); err != nil {
+		a.setMessage(fmt.Sprintf("Proxy VM creation failed: %s", err.Error()))
+		return
+	}
+	for _, r := range a.Resources {
+		if r.Name == "Proxy VM" {
+			r.Status = fmt.Sprintf("OK", ip)
+		}
+	}
 
 	a.setMessage("")
 }

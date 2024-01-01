@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
 )
 
@@ -11,7 +12,7 @@ func (a *App) CheckOrCreateResourceGroup(name string) (err error) {
 	}
 	rgclient := factory.NewResourceGroupsClient()
 
-	_, err = rgclient.CreateOrUpdate(a.ctx, name, armresources.ResourceGroup{Location: a.Location}, nil)
+	_, err = rgclient.CreateOrUpdate(a.ctx, name, armresources.ResourceGroup{Location: to.Ptr(a.Location)}, nil)
 	if err != nil {
 		return
 	}

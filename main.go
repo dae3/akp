@@ -46,18 +46,5 @@ func main() {
 
 		rgname := "foo"
 		l := location
-		_, err = rgclient.CreateOrUpdate(context.Background(), rgname, armresources.ResourceGroup{Location: &l}, &armresources.ResourceGroupsClientCreateOrUpdateOptions{})
-		if err != nil {
-			panic(err)
-		}
-
-			compfactory, err := armcompute.NewClientFactory(subscription, id, nil)
-			if err != nil {
-				panic(err)
-			}
-
-			vmclient := compfactory.NewVirtualMachinesClient()
-
-			vm, err := vmclient.BeginCreateOrUpdate(context.Background(), rg.Name, "foo", armcompute.VirtualMachine{Location: &l, })
 	*/
 }
