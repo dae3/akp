@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>akp</title>
+</head>
+<body>
+<div id="app">
+    <div>
+        <p><label>Authenticated to Azure as <span id="azid">...</span></label></p>
+        <p><label>Subscription: <select disabled id="subscriptions"></select></label></p>
+    </div>
+    <div id="resources">
+        <ul></ul>
+    </div>
+    <input type="button" value="Connect" id="connect" />
+    <div id="message"></div>
+</div>
+<script src="./src/main.js" type="module"></script>
+</body>
+</html>
